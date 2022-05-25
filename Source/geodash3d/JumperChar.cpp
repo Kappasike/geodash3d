@@ -22,13 +22,31 @@ AJumperChar::AJumperChar()
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 
+	GeoCube = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Drippy Cube"));
+	GeoCube->SetupAttachment(RootComponent);
+
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> CubeAsset(TEXT("SkeletalMesh'/Game/Mesh/othermodel/geometrydashrender.geometrydashrender'"));
+
+	if (CubeAsset.Succeeded())
+	{
+		GeoCube->SetSkeletalMesh(CubeAsset.Object);
+		GeoCube->SetRelativeLocation(FVector(0.f, 0.f, -3.0f));
+		GeoCube->SetRelativeScale3D(FVector(0.84f, 0.84f, 0.84f));
+		GeoCube->SetRelativeRotation(FQuat(FRotator(0.f, 0.f, 0.f)));
+	}
+
 	GetCharacterMovement()->MaxWalkSpeed = 0.f;
+	GetCharacterMovement()->Mass = 500.f;
+	GetCharacterMovement()->GravityScale = 4.f;
+	GetCharacterMovement()->JumpZVelocity = 800.f;
+	
 
 	LookRate = 40.0f;
+	TurnRate = 0.f;
 
 	PitchValue = 0.f;
 	YawValue = 0.f;
-	RollValue = 1.f;
+	RollValue = 3.f;
 }
 
 // Called when the game starts or when spawned
@@ -47,13 +65,15 @@ void AJumperChar::Tick(float DeltaTime)
 	MoveRight(1.f);
 
 	if (GetCharacterMovement()->IsFalling()) {
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("IsFalling=true"));
 		FQuat QuatRotation = FQuat(FRotator(PitchValue, YawValue, RollValue));
 
-		AddActorLocalRotation(QuatRotation, false, 0, ETeleportType::None); 
+		GeoCube->AddLocalRotation(QuatRotation, false, 0, ETeleportType::None);
 	}
 	else {
 		FQuat DefaultRot = FQuat(FRotator(0.f, 0.f, 0.f));
-		SetActorRotation(DefaultRot);
+
+		GeoCube->SetRelativeRotation(DefaultRot);
 	}
 }
 
@@ -87,7 +107,7 @@ void AJumperChar::JumpGD()
 
 void AJumperChar::Start()
 {
-	GetCharacterMovement()->MaxWalkSpeed = 200.f;
+	GetCharacterMovement()->MaxWalkSpeed = 300.f;
 }
 
 void AJumperChar::Stop()

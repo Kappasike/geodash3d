@@ -50,6 +50,9 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		UCameraComponent* Camera;
 
+	UPROPERTY(VisibleAnywhere)
+		USkeletalMeshComponent* GeoCube;
+
 	UPROPERTY(EditAnywhere, Category = Movement)
 		float PitchValue;
 
