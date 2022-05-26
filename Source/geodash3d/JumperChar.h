@@ -41,8 +41,12 @@ public:
 
 	void JumpGD();
 
+	void Straighten();
+
 	float TurnRate;
 	float LookRate;
+	float currentRot;
+	float roll;
 
 	UPROPERTY(VisibleAnywhere)
 		USpringArmComponent* BoomArm;
@@ -62,4 +66,15 @@ public:
 	UPROPERTY(EditAnywhere, Category = Movement)
 		float RollValue;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SpinnyThing)
+		FRotator RotationRate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SpinnyThing)
+		FRotator DefaultRotation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SpinnyThing)
+		FRotator UpsideDownRotation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SpinnyThing)
+		float Speed;
 };

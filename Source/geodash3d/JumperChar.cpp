@@ -46,7 +46,15 @@ AJumperChar::AJumperChar()
 
 	PitchValue = 0.f;
 	YawValue = 0.f;
-	RollValue = 3.f;
+	RollValue = 180.f;
+
+	this->RotationRate = FRotator(90.f, 0.f, 0.f);
+
+	this->DefaultRotation = FRotator(0.f, 0.f, 0.f);
+
+	this->UpsideDownRotation = FRotator(180.f, 0.f, 0.f);
+
+	this->Speed = 3.f;
 }
 
 // Called when the game starts or when spawned
@@ -62,18 +70,24 @@ void AJumperChar::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	
+	GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Blue, FString::Printf(TEXT("CurrentRotation is roll: %f"), roll));
+
 	MoveRight(1.f);
 
 	if (GetCharacterMovement()->IsFalling()) {
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("IsFalling=true"));
+
+		GeoCube->AddLocalRotation(this->RotationRate * DeltaTime * Speed);
+
+		/*GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("IsFalling=true"));
 		FQuat QuatRotation = FQuat(FRotator(PitchValue, YawValue, RollValue));
 
-		GeoCube->AddLocalRotation(QuatRotation, false, 0, ETeleportType::None);
+		GeoCube->AddLocalRotation(QuatRotation * DeltaTime, false, 0, ETeleportType::None);*/
+		roll = GeoCube->GetRelativeRotation().Roll;
 	}
-	else {
-		FQuat DefaultRot = FQuat(FRotator(0.f, 0.f, 0.f));
-
-		GeoCube->SetRelativeRotation(DefaultRot);
+	else
+	{
+		Straighten();
 	}
 }
 
@@ -114,6 +128,40 @@ void AJumperChar::Stop()
 {
 	GetCharacterMovement()->MaxWalkSpeed = 0.f;
 	SetActorLocation(FVector(590.0f, -1350.0f, 112.f), false, 0, ETeleportType::None);
+}
+
+void AJumperChar::Straighten()
+{
+	
+	/*if (90 < roll && roll < 180)
+	{
+		GeoCube->SetRelativeRotation(FQuat(FRotator(90.f, 0.f, 0.f)));
+	}
+	else if (180 < roll && roll < 270)
+	{
+		GeoCube->SetRelativeRotation(FQuat(FRotator(180.f, 0.f, 0.f)));
+	}
+	else if (270 < roll && roll < 360)
+	{
+		GeoCube->SetRelativeRotation(FQuat(FRotator(270.f, 0.f, 0.f)));
+	}
+	else if (-180 < roll && roll < -0)
+	{
+		GeoCube->SetRelativeRotation(FQuat(FRotator(0.f, 0.f, 0.f)));
+	}*
+	else
+	{
+		GeoCube->SetRelativeRotation(FQuat(FRotator(0.f, 0.f, 0.f)));
+	}*/
+	if ((-90 > roll && roll > -180) || (180 > roll && roll > 90))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Rotating to upside down"));
+		GeoCube->SetRelativeRotation(FQuat(UpsideDownRotation));
+	}
+	else {
+		GeoCube->SetRelativeRotation(FQuat(DefaultRotation));
+	}
+	
 }
 
 void AJumperChar::MoveRight(float value)
