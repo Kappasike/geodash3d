@@ -10,6 +10,6 @@
   </a>
   <h1>
   L + ratio + you fell off
-  <img src="https://c.tenor.com/X9p7LomnuNkAAAAM/quote-tweet.gif" width="100px"/>
+  <img src="https://c.tenor.com/CyizlWwbNJYAAAAC/fumo-spin.gif" width="300px"/>
 </h1>
 </div>
