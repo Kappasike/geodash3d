@@ -71,7 +71,7 @@ void AJumperChar::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	
-	GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Blue, FString::Printf(TEXT("CurrentRotation is roll: %f"), roll));
+	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Blue, FString::Printf(TEXT("CurrentRotation is roll: %f"), roll));
 
 	MoveRight(1.f);
 
@@ -121,7 +121,7 @@ void AJumperChar::JumpGD()
 
 void AJumperChar::Start()
 {
-	GetCharacterMovement()->MaxWalkSpeed = 300.f;
+	GetCharacterMovement()->MaxWalkSpeed = 380.f;
 }
 
 void AJumperChar::Stop()
@@ -155,7 +155,7 @@ void AJumperChar::Straighten()
 	}*/
 	if ((-90 > roll && roll > -180) || (180 > roll && roll > 90))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Rotating to upside down"));
+		//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Rotating to upside down"));
 		GeoCube->SetRelativeRotation(FQuat(UpsideDownRotation));
 	}
 	else {
