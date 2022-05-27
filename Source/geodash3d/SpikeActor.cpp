@@ -17,8 +17,8 @@ ASpikeActor::ASpikeActor()
 	CollisionBox->SetCollisionProfileName("Trigger");
 	RootComponent = CollisionBox;
 
-	CollisionBox->OnComponentBeginOverlap.AddDynamic(this, &ASpikeActor::OnOverlapBegin);
-	CollisionBox->OnComponentEndOverlap.AddDynamic(this, &ASpikeActor::OnOverlapEnd);
+	//CollisionBox->OnComponentBeginOverlap.AddDynamic(this, &ASpikeActor::OnOverlapBegin);
+	//CollisionBox->OnComponentEndOverlap.AddDynamic(this, &ASpikeActor::OnOverlapEnd);
 
 	SpikeObj = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SpikeComponent"));
 	SpikeObj->SetupAttachment(RootComponent);
@@ -48,11 +48,12 @@ void ASpikeActor::Tick(float DeltaTime)
 
 }
 
+/*
 void ASpikeActor::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, "Overlap Begin Function Called");
 
-	UGameplayStatics::OpenLevel(GetWorld(), TEXT("/Game/Levels/YouAreDead"), TRAVEL_Absolute);
+	//UGameplayStatics::OpenLevel(GetWorld(), TEXT("/Game/Levels/YouAreDead"), TRAVEL_Absolute);
 }
 
 void ASpikeActor::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
@@ -60,3 +61,4 @@ void ASpikeActor::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* Othe
 	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, "Overlap End Function Called");
 }
 
+*/

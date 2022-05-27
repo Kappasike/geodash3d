@@ -10,6 +10,9 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "JumperChar.generated.h"
 
+class UNiagaraSystem;
+class USoundBase;
+
 UCLASS()
 class GEODASH3D_API AJumperChar : public ACharacter
 {
@@ -39,14 +42,30 @@ public:
 
 	void Stop();
 
-	void JumpGD();
-
 	void Straighten();
 
 	float TurnRate;
 	float LookRate;
 	float currentRot;
 	float roll;
+
+	bool bDead;
+
+	UFUNCTION()
+		void StartJump(float value);
+
+	UFUNCTION()
+		void StopJump();
+
+	UFUNCTION()
+		void Explode();
+
+	UFUNCTION()
+		void OnOverlapBegin(class UPrimitiveComponent* HitComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UPROPERTY(EditAnywhere, Category = "UI Hud")
+		TSubclassOf<UUserWidget> Player_Info_Widget_Class;
+	UUserWidget* Player_Info_Widget;
 
 	UPROPERTY(VisibleAnywhere)
 		USpringArmComponent* BoomArm;
@@ -77,4 +96,13 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SpinnyThing)
 		float Speed;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		int Attempts = 1;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Death")
+		UNiagaraSystem* NS_Explosion;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Death")
+		USoundBase* SB_Explosion;
 };

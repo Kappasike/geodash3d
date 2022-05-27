@@ -2,6 +2,10 @@
 
 
 #include "JumperChar.h"
+#include "Kismet/GameplayStatics.h"
+#include "NiagaraFunctionLibrary.h"
+#include "Blueprint/UserWidget.h"
+
 
 // Sets default values
 AJumperChar::AJumperChar()
@@ -27,6 +31,9 @@ AJumperChar::AJumperChar()
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> CubeAsset(TEXT("SkeletalMesh'/Game/Mesh/othermodel/geometrydashrender.geometrydashrender'"));
 
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> DeadCubeAsset(TEXT("SkeletalMesh'/Game/Mesh/othermodel/DeadMesh.DeadMesh'"));
+
+
 	if (CubeAsset.Succeeded())
 	{
 		GeoCube->SetSkeletalMesh(CubeAsset.Object);
@@ -35,7 +42,7 @@ AJumperChar::AJumperChar()
 		GeoCube->SetRelativeRotation(FQuat(FRotator(0.f, 0.f, 0.f)));
 	}
 
-	GetCharacterMovement()->MaxWalkSpeed = 0.f;
+	GetCharacterMovement()->MaxWalkSpeed = 380.f;
 	GetCharacterMovement()->Mass = 500.f;
 	GetCharacterMovement()->GravityScale = 4.f;
 	GetCharacterMovement()->JumpZVelocity = 800.f;
@@ -55,6 +62,8 @@ AJumperChar::AJumperChar()
 	this->UpsideDownRotation = FRotator(180.f, 0.f, 0.f);
 
 	this->Speed = 3.f;
+
+	bDead = false;
 }
 
 // Called when the game starts or when spawned
@@ -62,7 +71,12 @@ void AJumperChar::BeginPlay()
 {
 	Super::BeginPlay();
 
-	
+	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AJumperChar::OnOverlapBegin);
+
+	if (Player_Info_Widget_Class != nullptr) {
+		Player_Info_Widget = CreateWidget(GetWorld(), Player_Info_Widget_Class);
+		Player_Info_Widget->AddToViewport();
+	}
 }
 
 // Called every frame
@@ -99,7 +113,11 @@ void AJumperChar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAxis("TurnRate", this, &AJumperChar::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &AJumperChar::LookUpAtRate);
 
-	PlayerInputComponent->BindAction("JumpGD", IE_Pressed, this, &AJumperChar::JumpGD);
+	PlayerInputComponent->BindAxis("Jump", this, &AJumperChar::StartJump);
+
+	//PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AJumperChar::StartJump);
+	//PlayerInputComponent->BindAction("Jump", IE_Released, this, &AJumperChar::StopJump);
+
 	PlayerInputComponent->BindAction("Start", IE_Pressed, this, &AJumperChar::Start);
 	PlayerInputComponent->BindAction("Stop", IE_Pressed, this, &AJumperChar::Stop);
 }
@@ -114,9 +132,15 @@ void AJumperChar::LookUpAtRate(float Rate)
 	AddControllerPitchInput(Rate * GetWorld()->GetDeltaSeconds() * LookRate);
 }
 
-void AJumperChar::JumpGD()
+void AJumperChar::StartJump(float value)
 {
+	if(value>0.5f && !bDead)
 	AJumperChar::Jump();
+}
+
+void AJumperChar::StopJump()
+{
+	bPressedJump = false;
 }
 
 void AJumperChar::Start()
@@ -126,8 +150,7 @@ void AJumperChar::Start()
 
 void AJumperChar::Stop()
 {
-	GetCharacterMovement()->MaxWalkSpeed = 0.f;
-	SetActorLocation(FVector(590.0f, -1350.0f, 112.f), false, 0, ETeleportType::None);
+	UGameplayStatics::OpenLevel(this, FName(*GetWorld()->GetName()), false);
 }
 
 void AJumperChar::Straighten()
@@ -171,6 +194,50 @@ void AJumperChar::MoveRight(float value)
 
 	AddMovementInput(FVector(90.f), value);
 	*/
+	if(!bDead){
 	FVector Direction = FRotationMatrix(Controller->GetControlRotation()).GetScaledAxis(EAxis::Y);
 	AddMovementInput(Direction, value);
+	}
 }
+
+void AJumperChar::OnOverlapBegin(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor->ActorHasTag("KillObj")) {
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, "You Die lol");
+		if (!bDead)
+		{
+			bDead = true;
+
+			Attempts++;
+
+			FTimerHandle TExplodeHandle;
+			GetWorldTimerManager().SetTimer(TExplodeHandle, this, &AJumperChar::Stop, 1.f, false);
+
+			AJumperChar::Explode();
+			
+		}
+	}
+}
+
+
+void AJumperChar::Explode()
+{
+	FVector ExplosionLocation = GeoCube->GetComponentLocation();
+
+	if (NS_Explosion)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), NS_Explosion, ExplosionLocation);
+	}
+
+	if (SB_Explosion)
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SB_Explosion, ExplosionLocation);
+	}
+
+	GetCharacterMovement()->Mass = 1000.f;
+	GetCharacterMovement()->MaxWalkSpeed = 0.f;
+	GetCharacterMovement()->Velocity = FVector(0.f, 0.f, 0.f);
+	GeoCube->DestroyComponent();
+}
+
+

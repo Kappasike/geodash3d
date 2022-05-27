@@ -17,8 +17,8 @@ ACubeActor::ACubeActor()
 	CollisionBox->SetCollisionProfileName("Trigger");
 	RootComponent = CollisionBox;
 
-	CollisionBox->OnComponentBeginOverlap.AddDynamic(this, &ACubeActor::OnOverlapBegin);
-	CollisionBox->OnComponentEndOverlap.AddDynamic(this, &ACubeActor::OnOverlapEnd);
+	//CollisionBox->OnComponentBeginOverlap.AddDynamic(this, &ACubeActor::OnOverlapBegin);
+	//CollisionBox->OnComponentEndOverlap.AddDynamic(this, &ACubeActor::OnOverlapEnd);
 
 	CubeObj = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CubeComponent"));
 	CubeObj->SetupAttachment(RootComponent);
@@ -47,7 +47,7 @@ void ACubeActor::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
-
+/*
 void ACubeActor::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, "Overlap Begin Function Called");
@@ -60,3 +60,4 @@ void ACubeActor::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* Other
 	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, "Overlap End Function Called");
 }
 
+*/
