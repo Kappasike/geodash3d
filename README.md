@@ -14,6 +14,6 @@ A fun project I'm making to try and learn Unreal Engine 4, just planning on tryi
 what it looks like so far: https://streamable.com/kzlcu3 (last updated: 5/26/22, 11:45 PM)
 
   <img src="https://c.tenor.com/CyizlWwbNJYAAAAC/fumo-spin.gif" width="300px"/>
-    <img src="https://c.tenor.com/KonpgHILOvMAAAAd/touhou-fumo-rumia.gif" width="300px"/>
+    <img src="https://c.tenor.com/vq5hGWF4ocwAAAAd/get-real-car.gif" width="300px"/>
 </h1>
 </div>
