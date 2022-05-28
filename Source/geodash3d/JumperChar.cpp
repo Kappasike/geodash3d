@@ -4,6 +4,7 @@
 #include "JumperChar.h"
 #include "Kismet/GameplayStatics.h"
 #include "NiagaraFunctionLibrary.h"
+#include "UObject/ConstructorHelpers.h"
 #include "Blueprint/UserWidget.h"
 
 
@@ -31,9 +32,6 @@ AJumperChar::AJumperChar()
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> CubeAsset(TEXT("SkeletalMesh'/Game/Mesh/othermodel/geometrydashrender.geometrydashrender'"));
 
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> DeadCubeAsset(TEXT("SkeletalMesh'/Game/Mesh/othermodel/DeadMesh.DeadMesh'"));
-
-
 	if (CubeAsset.Succeeded())
 	{
 		GeoCube->SetSkeletalMesh(CubeAsset.Object);
@@ -42,11 +40,21 @@ AJumperChar::AJumperChar()
 		GeoCube->SetRelativeRotation(FQuat(FRotator(0.f, 0.f, 0.f)));
 	}
 
+	static ConstructorHelpers::FObjectFinder<USoundCue> SongSoundCueObject(TEXT("SoundCue'/Game/Songs/SC_Song22.SC_Song22'"));
+
+	if (SongSoundCueObject.Succeeded())
+	{
+		SongStartCue = SongSoundCueObject.Object;
+
+		SongAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("SongAudioComponent"));
+		SongAudioComponent->SetupAttachment(RootComponent);
+
+	}
+
 	GetCharacterMovement()->MaxWalkSpeed = 380.f;
 	GetCharacterMovement()->Mass = 500.f;
 	GetCharacterMovement()->GravityScale = 4.f;
 	GetCharacterMovement()->JumpZVelocity = 800.f;
-	
 
 	LookRate = 40.0f;
 	TurnRate = 0.f;
@@ -77,6 +85,22 @@ void AJumperChar::BeginPlay()
 		Player_Info_Widget = CreateWidget(GetWorld(), Player_Info_Widget_Class);
 		Player_Info_Widget->AddToViewport();
 	}
+
+	if (SongAudioComponent && SongStartCue)
+	{
+		SongAudioComponent->SetSound(SongStartCue);
+	}
+	
+	if (SongAudioComponent && SongStartCue)
+	{
+		SongAudioComponent->Play();
+	}
+	/*
+	if (SongAudioComponent && SongStartCue) {
+		SongAudioComponent->SetSound(SongStartCue);
+	}
+	*/
+	//UGameplayStatics::PlaySound2D(GetWorld(), SB_Song22);
 }
 
 // Called every frame
@@ -150,7 +174,14 @@ void AJumperChar::Start()
 
 void AJumperChar::Stop()
 {
-	UGameplayStatics::OpenLevel(this, FName(*GetWorld()->GetName()), false);
+	AJumperChar::SetActorLocation(FVector(580.f, -1350.f, 100.f));
+	bDead = false;
+	GeoCube->SetRelativeScale3D(FVector(0.84f, 0.84f, 0.84f));
+	GetCharacterMovement()->MaxWalkSpeed = 380.f;
+	GetCharacterMovement()->Mass = 500.f;
+	SongAudioComponent->Play();
+	//UGameplayStatics::PlaySound2D(GetWorld(), SB_Song22);
+	//UGameplayStatics::OpenLevel(this, FName(*GetWorld()->GetName()), false);
 }
 
 void AJumperChar::Straighten()
@@ -208,6 +239,8 @@ void AJumperChar::OnOverlapBegin(UPrimitiveComponent* HitComp, AActor* OtherActo
 		{
 			bDead = true;
 
+			SongAudioComponent->Stop();
+
 			Attempts++;
 
 			FTimerHandle TExplodeHandle;
@@ -237,7 +270,8 @@ void AJumperChar::Explode()
 	GetCharacterMovement()->Mass = 1000.f;
 	GetCharacterMovement()->MaxWalkSpeed = 0.f;
 	GetCharacterMovement()->Velocity = FVector(0.f, 0.f, 0.f);
-	GeoCube->DestroyComponent();
+	GeoCube->SetRelativeScale3D(FVector(0.f, 0.f, 0.f));
+	//GeoCube->DestroyComponent();
 }
 
 

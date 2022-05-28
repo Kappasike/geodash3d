@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/AudioComponent.h"
+#include "Sound/SoundCue.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "JumperChar.generated.h"
@@ -97,7 +99,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SpinnyThing)
 		float Speed;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Attempts)
 		int Attempts = 1;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Death")
@@ -105,4 +107,16 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Death")
 		USoundBase* SB_Explosion;
+
+	/*
+	UPROPERTY(EditDefaultsOnly, Category = "Music")
+		USoundBase* SB_Song22;
+	*/
+
+	UPROPERTY(EditDefaultsOnly, Category = "Music")
+		class USoundCue* SongStartCue;
+
+	UAudioComponent* SongAudioComponent;
 };
+
+	

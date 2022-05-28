@@ -25,6 +25,7 @@ ASpikeActor::ASpikeActor()
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> SpikeAsset(TEXT("StaticMesh'/Game/Mesh/GeoSpike.GeoSpike'"));
 
+
 	if (SpikeAsset.Succeeded())
 	{
 		SpikeObj->SetStaticMesh(SpikeAsset.Object);
