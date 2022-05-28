@@ -95,6 +95,8 @@ void AJumperChar::BeginPlay()
 	{
 		SongAudioComponent->Play();
 	}
+		
+
 	/*
 	if (SongAudioComponent && SongStartCue) {
 		SongAudioComponent->SetSound(SongStartCue);
